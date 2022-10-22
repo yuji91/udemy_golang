@@ -1,35 +1,31 @@
 package main
 
 import (
-  "database/sql"
-  "log"
+  "fmt"
 
-  _ "github.com/mattn/go-sqlite3"
+  "gopkg.in/go-ini/ini.v1"
 )
 
-var Db *sql.DB
+type ConfigList struct {
+  Port      int
+  DbName    string
+  SQLDriver string 
+}
+
+var Config ConfigList
+
+func init() {
+  cfg, _ := ini.Load("config.ini")
+
+  Config = ConfigList{
+    Port: cfg.Section("web").Key("port").MustInt(8080),
+    DbName: cfg.Section("db").Key("name").MustString("example.sql"),
+    SQLDriver: cfg.Section("db").Key("driver").String(),
+  }
+}
 
 func main() {
-  Db, _ := sql.Open("sqlite3", "./example.sql")
-
-  defer Db.Close()
-
-  // INSERT DATA
-  cmd := "INSERT INTO persons (name, age) VALUES (?, ?)"
-  _, err := Db.Exec(cmd, "test_01", 20)
-  if err != nil {
-    log.Fatalln(err)
-  }
-
-/*
-  // CREATE TABLE
-  cmd := `CREATE TABLE IF NOT EXISTS persons(
-                                      name STRING,
-                                      age INT)`
-  _, err := Db.Exec(cmd)
-
-  if err != nil {
-    log.Fatalln(err)
-  }
-*/
+  fmt.Printf("Port = %v\n", Config.Port)
+  fmt.Printf("DbName = %v\n", Config.DbName)
+  fmt.Printf("SQLDriver = %v\n", Config.SQLDriver)
 }
