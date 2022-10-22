@@ -14,6 +14,15 @@ func main() {
 
   defer Db.Close()
 
+  // INSERT DATA
+  cmd := "INSERT INTO persons (name, age) VALUES (?, ?)"
+  _, err := Db.Exec(cmd, "test_01", 20)
+  if err != nil {
+    log.Fatalln(err)
+  }
+
+/*
+  // CREATE TABLE
   cmd := `CREATE TABLE IF NOT EXISTS persons(
                                       name STRING,
                                       age INT)`
@@ -22,4 +31,5 @@ func main() {
   if err != nil {
     log.Fatalln(err)
   }
+*/
 }
